@@ -18,18 +18,20 @@ This may involve
 - reorganizing code
 - applying design patterns
 - externalizing data
-- improving the Readme Usage section (!)
+- improving the Readme "GffQuery Usage" section (!)
 
 Although this is not exactly in the spirit of refactoring, changing some functionality for the better is also 
  allowed (but not the purpose of this assignment).
 
+Maybe you can even whip up some test cases?
 
 
 ## GffQuery Usage
 
 This is my repo for the gff query, only raw code will be submitted here along with gradle files to build a jar.
 
-The data folder contains example files for testing the script. Info on the gff format can be found [here](https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md)
+The data folder contains example files for testing the script. Info on the gff format can be 
+found [here](https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md)
 
 After the jar is built, you can run it.
 
