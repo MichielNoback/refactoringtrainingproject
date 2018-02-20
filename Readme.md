@@ -1,5 +1,31 @@
-### README ###
-#### GffQuery ####
+# GffReader Refactoring
+
+## Purpose
+
+This repo is meant to be used as a refactoring training repo.
+Study the code and refactor it to be  
+
+- more efficient
+- better OO design
+- easier to read/understand
+- more extendable
+
+This may involve 
+
+- changing names 
+- changing logic
+- extracting variables, methods, classes, enums, interfaces
+- reorganizing code
+- applying design patterns
+- externalizing data
+- improving the Readme Usage section (!)
+
+Although this is not exactly in the spirit of refactoring, changing some functionality for the better is also 
+ allowed (but not the purpose of this assignment).
+
+
+
+## GffQuery Usage
 
 This is my repo for the gff query, only raw code will be submitted here along with gradle files to build a jar.
 
