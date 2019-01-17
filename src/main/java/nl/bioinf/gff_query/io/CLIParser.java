@@ -4,171 +4,92 @@ import org.apache.commons.cli.*;
 import java.io.File;
 
 public class CLIParser {
-    private Options options;
-    private Options help_options;
-    private CommandLine cmd;
-    private CommandLine help_cmd;
+    static final String OPTION_HELP = "help";
+    static final String OPTION_INFILE = "infile";
+    static final String OPTION_SUMMARY = "summary";
+    static final String OPTION_FETCH_TYPE = "fetch_type";
+    static final String OPTION_FETCH_REGION = "fetch_region";
+    static final String OPTION_FETCH_CHILDREN = "fetch_children";
+    static final String OPTION_FIND_WILDCARD = "find_wildcard";
+    static final String OPTION_FILTER = "filter";
+    /*private -> testing*/ Options options;
+    /*private -> testing*/ CommandLine commandLine;
     private DefaultParser parser;
     private HelpFormatter formatter;
+    private Options helpOptions;
 
     public CLIParser() {
-        // Create parser object
         this.parser = new DefaultParser();
-        // create Options object
-        this.options = new Options();
-        this.help_options = new Options();
-        // add cli options
+        buildOptions();
+    }
 
+    private void buildOptions() {
+        this.options = new Options();
+        this.helpOptions = new Options();
+        /*builds the options*/
         Option helpOption = Option.builder("h")
-                .longOpt("help")
+                .longOpt(OPTION_HELP)
                 .required(false)
                 .hasArg(false)
-                .desc("Gives program help.")
+                .desc("Gives usage instructions")
                 .build();
-        this.help_options.addOption(helpOption);
-        this.options.addOption(helpOption);
+        options.addOption(helpOption);
+        helpOptions.addOption(helpOption);
         Option infileOption = Option.builder("i")
-                .longOpt("infile")
+                .longOpt(OPTION_INFILE)
                 .required(true)
                 .hasArg(true)
-                .desc("input gff3 file, e.g. \"gff3_sample.gff3\"")
+                .desc("The input gff3 file, as absolute or relative path")
                 .build();
-        this.options.addOption(infileOption);
+        options.addOption(infileOption);
         Option summaryOption = Option.builder("s")
-                .longOpt("summary")
+                .longOpt(OPTION_SUMMARY)
                 .required(false)
                 .hasArg(false)
-                .desc("makes a summary of the gff3 file.")
+                .desc("lists a summary of the gff3 file")
                 .build();
-        this.options.addOption(summaryOption);
+        options.addOption(summaryOption);
         Option fetchtypeOption = Option.builder("ft")
-                .longOpt("fetch_type")
+                .longOpt(OPTION_FETCH_TYPE)
                 .required(false)
                 .hasArg(true)
-                .desc("fetches type, e.g. \"CDS\"")
+                .desc("Lists all features of the requested type, e.g. \"CDS\"")
                 .build();
-        this.options.addOption(fetchtypeOption);
+        options.addOption(fetchtypeOption);
         Option fetchregionOption = Option.builder("fr")
-                .longOpt("fetch_region")
+                .longOpt(OPTION_FETCH_REGION)
                 .required(false)
                 .hasArg(true)
-                .desc("fetches region in between start..end, e.g. \"250000..260000\"")
+                .desc("Lists all the features that reside completely within the given region; specified as start..end, e.g. \"250000..260000\"")
                 .build();
-        this.options.addOption(fetchregionOption);
+        options.addOption(fetchregionOption);
         Option fetchchildrenOption = Option.builder("fc")
-                .longOpt("fetch_children")
+                .longOpt(OPTION_FETCH_CHILDREN)
                 .required(false)
                 .hasArg(true)
-                .desc("input which Parent group attributes to sort on, e.g. \"PGSC0003DMT400039136\".")
+                .desc("Lists all child features of the given feature ID, e.g. \"PGSC0003DMT400039136\"")
                 .build();
-        this.options.addOption(fetchchildrenOption);
+        options.addOption(fetchchildrenOption);
         Option findwildcardOption = Option.builder("fw")
-                .longOpt("find_wildcard")
+                .longOpt(OPTION_FIND_WILDCARD)
                 .required(false)
                 .hasArg(true)
-                .desc("input which wildcard, e.g. \"[dD]efesin\" to match on. (gff3 name attribute)")
+                .desc("Lists all features for which the \"name\" attribute matches the given wildcard, e.g. \"[dD]efesin\"")
                 .build();
-        this.options.addOption(findwildcardOption);
+        options.addOption(findwildcardOption);
         Option filterOption = Option.builder("f")
-                .longOpt("filter")
+                .longOpt(OPTION_FILTER)
                 .required(false)
                 .hasArg(true)
-                .desc("miscellaneous filters, defined like" +
-                        " so: \"source|score|orientation|maximum_length|minimum_length\"")
+                .desc("Lists all features that pass all of the given filters dspecified in the format string defined as" +
+                        ": \"source|score|orientation|maximum_length|minimum_length\" where the filters should be relevant to the " +
+                        "given attribute")
                 .build();
-        this.options.addOption(filterOption);
-        // create help
-        this.formatter = new HelpFormatter();
-    }
-
-    public void cliParse(String[] args) throws ParseException {
-        this.cmd = this.parser.parse(this.options, args);
-    }
-
-    public boolean checkInputs() {
-        // check which inputs exist and check them (if neccesary)
-        // check infile
-        if (this.cmd.hasOption("infile")) {
-            File f = new File(this.cmd.getOptionValue("infile"));
-            if(!(f.exists() && !f.isDirectory())) {
-                // raise error that file does not exist.
-                return false;
-            }
-        }
-        // check filter
-        if (this.cmd.hasOption("filter")) {
-            // check if filter has correct formatting. If it does not, return false
-            // <SOURCE, SCORE, ORIENTATION MAXIMUM AND/OR MINIMUM LENGTH>
-            if (!this.cmd.getOptionValue("filter").matches(
-                    "(.+\\|(\\d+|\\*|\\.)\\|(\\.|\\+|\\-|\\*)\\|(\\d+|\\*|\\.)\\|(\\d+|\\*|\\.))")) {
-                return false;
-            }
-        }
-        // check fetch region
-        if (this.cmd.hasOption("fetch_region")) {
-            // check if fetch region has correct formatting.
-            if (!this.cmd.getOptionValue("fetch_region").matches("\\d+\\.\\.\\d+")){
-                return false;
-            }
-        }
-
-        if (this.cmd.hasOption("fetch_type")) {
-            // check if not a bool.
-            if (this.cmd.getOptionValue("fetch_type").matches("(true|false)")) {
-                return false;
-            }
-        }
-        if (this.cmd.hasOption("fetch_children")) {
-            // check if not a bool.
-            if (this.cmd.getOptionValue("fetch_children").matches("(true|false)")) {
-                return false;
-            }
-        }
-        if (this.cmd.hasOption("find_wildcard")) {
-            // check if not a bool.
-            if (this.cmd.getOptionValue("find_wildcard").matches("(true|false)")) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public String[] returnArguments() {
-        String[] parsed_args = new String[7];
-        // build parsed_args array.
-        // it is filled with options/null respectively like so;
-        // infile, summary, fetch_type, fetch_region, fetch_children, find_wildcard, filter
-        // Options without arguments, will be false if not present, and true when present.
-        // Options with arguments, will also be false if not present, and their getOptionValue when present.
-        // keep all values strings to be consistent.
-        if (this.cmd.hasOption("infile")) {parsed_args[0] = this.cmd.getOptionValue("infile");}
-        else {parsed_args[0] = "false";}
-        if (this.cmd.hasOption("summary")) {parsed_args[1] = "true";}
-        else {parsed_args[1] = "false";}
-        if (this.cmd.hasOption("fetch_type")) {parsed_args[2] = this.cmd.getOptionValue("fetch_type");}
-        else {parsed_args[2] = "false";}
-        if (this.cmd.hasOption("fetch_region")) {parsed_args[3] = this.cmd.getOptionValue("fetch_region");}
-        else {parsed_args[3] = "false";}
-        if (this.cmd.hasOption("fetch_children")) {parsed_args[4] = this.cmd.getOptionValue("fetch_children");}
-        else {parsed_args[4] = "false";}
-        if (this.cmd.hasOption("find_wildcard")) {parsed_args[5] = this.cmd.getOptionValue("find_wildcard");}
-        else {parsed_args[5] = "false";}
-        if (this.cmd.hasOption("filter")) {parsed_args[6] = this.cmd.getOptionValue("filter");}
-        else {parsed_args[6] = "false";}
-
-        return parsed_args;
-    }
-
-    public boolean cliHelpParse(String[] args) throws ParseException {
-        this.help_cmd = new DefaultParser().parse(this.help_options, args, true);
-        if(this.help_cmd.hasOption("help") || this.help_cmd.getArgs().length == 0) {
-            return true;
-        }
-        return false;
+        options.addOption(filterOption);
     }
 
     public void printHelp() {
-        // print the help or the version there. return true because help is printed
+        this.formatter = new HelpFormatter();
         String footer = "\nfor path, both windows and linux paths work. When specifying a relative path from the " +
                 "currect working directory however, watch out that you DO NOT prepend you path with a \"/\". e.g.:" +
                 " NOT /data/gene_sample.gff3 but data/gene_sample.gff3\n\n" +
@@ -182,5 +103,118 @@ public class CLIParser {
                 "\tMAXIMUM LENGTH should be defined using an integer";
 
         this.formatter.printHelp("GffQuery", "Version: 1.1-SNAPSHOT", this.options, footer, true);
+    }
+
+    public boolean isHelpRequested(String[] args) {
+        try {
+            CommandLine commandLine = this.parser.parse(this.options, args);
+            return (this.commandLine.hasOption(OPTION_HELP));
+        } catch (ParseException e) {
+            return true;
+        }
+    }
+
+    public void parseCommandLineArguments(String[] args) throws ParseException {
+        this.commandLine = this.parser.parse(this.options, args);
+    }
+
+    public GffAnalysisOptions getAnalysisOptions() {
+        GffAnalysisOptions gffAnalysisOptions = new GffAnalysisOptions();
+        if (this.commandLine.hasOption(OPTION_INFILE)) {
+            gffAnalysisOptions.setInFile(this.commandLine.getOptionValue("infile"));
+        }
+        if (this.commandLine.hasOption(OPTION_SUMMARY)) {
+            gffAnalysisOptions.setSummary(true);
+        }
+        if (this.commandLine.hasOption(OPTION_FETCH_TYPE)) {
+            gffAnalysisOptions.setSearchType(this.commandLine.getOptionValue("fetch_type"));
+        }
+//        if (this.commandLine.hasOption(OPTION_FETCH_REGION)) {parsed_args[3] = this.commandLine.getOptionValue("fetch_region");}
+//        else {parsed_args[3] = "false";}
+//        if (this.commandLine.hasOption(OPTION_FETCH_REGION)) {parsed_args[4] = this.commandLine.getOptionValue("fetch_children");}
+//        else {parsed_args[4] = "false";}
+//        if (this.commandLine.hasOption(OPTION_FIND_WILDCARD)) {parsed_args[5] = this.commandLine.getOptionValue("find_wildcard");}
+//        else {parsed_args[5] = "false";}
+//        if (this.commandLine.hasOption(OPTION_FILTER)) {parsed_args[6] = this.commandLine.getOptionValue("filter");}
+//        else {parsed_args[6] = "false";}
+
+        return null;
+    }
+
+
+
+    public String[] returnArguments() {
+        String[] parsed_args = new String[7];
+        // build parsed_args array.
+        // it is filled with options/null respectively like so;
+        // infile, summary, fetch_type, fetch_region, fetch_children, find_wildcard, filter
+        // Options without arguments, will be false if not present, and true when present.
+        // Options with arguments, will also be false if not present, and their getOptionValue when present.
+        // keep all values strings to be consistent.
+        if (this.commandLine.hasOption(OPTION_INFILE)) {parsed_args[0] = this.commandLine.getOptionValue("infile");}
+        else {parsed_args[0] = "false";}
+        if (this.commandLine.hasOption(OPTION_SUMMARY)) {parsed_args[1] = "true";}
+        else {parsed_args[1] = "false";}
+        if (this.commandLine.hasOption(OPTION_FETCH_TYPE)) {parsed_args[2] = this.commandLine.getOptionValue("fetch_type");}
+        else {parsed_args[2] = "false";}
+        if (this.commandLine.hasOption(OPTION_FETCH_REGION)) {parsed_args[3] = this.commandLine.getOptionValue("fetch_region");}
+        else {parsed_args[3] = "false";}
+        if (this.commandLine.hasOption(OPTION_FETCH_REGION)) {parsed_args[4] = this.commandLine.getOptionValue("fetch_children");}
+        else {parsed_args[4] = "false";}
+        if (this.commandLine.hasOption(OPTION_FIND_WILDCARD)) {parsed_args[5] = this.commandLine.getOptionValue("find_wildcard");}
+        else {parsed_args[5] = "false";}
+        if (this.commandLine.hasOption(OPTION_FILTER)) {parsed_args[6] = this.commandLine.getOptionValue("filter");}
+        else {parsed_args[6] = "false";}
+
+        return parsed_args;
+    }
+
+
+    public boolean checkInputs() {
+        // check which inputs exist and check them (if neccesary)
+        // check infile
+        if (this.commandLine.hasOption(OPTION_INFILE)) {
+            File f = new File(this.commandLine.getOptionValue(OPTION_INFILE));
+            if(!(f.exists() && !f.isDirectory())) {
+                // raise error that file does not exist.
+                return false;
+            }
+        }
+        // check filter
+        if (this.commandLine.hasOption(OPTION_FILTER)) {
+            // check if filter has correct formatting. If it does not, return false
+            // <SOURCE, SCORE, ORIENTATION MAXIMUM AND/OR MINIMUM LENGTH>
+            if (!this.commandLine.getOptionValue("filter").matches(
+                    "(.+\\|(\\d+|\\*|\\.)\\|(\\.|\\+|\\-|\\*)\\|(\\d+|\\*|\\.)\\|(\\d+|\\*|\\.))")) {
+                return false;
+            }
+        }
+        // check fetch region
+        if (this.commandLine.hasOption(OPTION_FETCH_REGION)) {
+            // check if fetch region has correct formatting.
+            if (!this.commandLine.getOptionValue(OPTION_FETCH_REGION).matches("\\d+\\.\\.\\d+")){
+                return false;
+            }
+        }
+
+        if (this.commandLine.hasOption(OPTION_FETCH_TYPE)) {
+            // check if not a bool.
+            if (this.commandLine.getOptionValue(OPTION_FETCH_TYPE).matches("(true|false)")) {
+                return false;
+            }
+        }
+        if (this.commandLine.hasOption(OPTION_FETCH_CHILDREN)) {
+            // check if not a bool.
+            if (this.commandLine.getOptionValue(OPTION_FETCH_CHILDREN).matches("(true|false)")) {
+                return false;
+            }
+        }
+        if (this.commandLine.hasOption(OPTION_FIND_WILDCARD)) {
+            // check if not a bool.
+            if (this.commandLine.getOptionValue(OPTION_FIND_WILDCARD).matches("(true|false)")) {
+                return false;
+            }
+        }
+        return true;
     }
 }

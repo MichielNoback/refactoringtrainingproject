@@ -6,17 +6,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class GffFile {
-    private ArrayList<GffLine> raw_lines = new ArrayList<>();
+    private ArrayList<GffLine> rawLines = new ArrayList<>();
     private ArrayList<GffLine> lines = new ArrayList<>();
     private boolean sorted = false;
     private String summary = "";
 
     public GffFile(ArrayList<String> fileLines, String path) {
-        for(String gff_line : fileLines){
-            if (!gff_line.startsWith("#")) {
+        for(String gffLine : fileLines){
+            if (!gffLine.startsWith("#")) {
                 try {
-                    GffLine temporary_gff_line_object = new GffLine(gff_line);
-                    this.raw_lines.add(temporary_gff_line_object);
+                    GffLine temporaryGffLineObject = new GffLine(gffLine);
+                    this.rawLines.add(temporaryGffLineObject);
                 }
                 catch (ArrayIndexOutOfBoundsException ex) {}
             }
@@ -26,8 +26,8 @@ public class GffFile {
     }
 
     public void applyFilters(String[] filters){
-        if (!this.raw_lines.isEmpty()) {
-            for(GffLine line : this.raw_lines){
+        if (!this.rawLines.isEmpty()) {
+            for(GffLine line : this.rawLines){
                 if (line.amICorrect(filters)){
                     lines.add(line);
                 }
@@ -54,45 +54,45 @@ public class GffFile {
         String[] split_path = path.split("/");
         String filename = split_path[split_path.length-1];
         this.summary = "file\t"+filename+"\ntotal number of features\t%s\nmolecules with features:\n";
-        ArrayList<String> checked_molecules = new ArrayList<>();
-        int total_no_features = this.raw_lines.size();
+        ArrayList<String> checkedMolecules = new ArrayList<>();
+        int totalNoFeatures = this.rawLines.size();
         // for each molecule build a string with information.
-        if (!this.raw_lines.isEmpty()) {
-            for (GffLine gff_line : this.raw_lines) {
-                String currect_molecule = gff_line.getSeqname();
+        if (!this.rawLines.isEmpty()) {
+            for (GffLine gffLine : this.rawLines) {
+                String currectMolecule = gffLine.getSeqname();
                 // check if molecule does not exists in check_molecules.
-                if (!checked_molecules.contains(currect_molecule)) {
+                if (!checkedMolecules.contains(currectMolecule)) {
                     // if it does not, add it
-                    checked_molecules.add(currect_molecule);
+                    checkedMolecules.add(currectMolecule);
                     // make info vars if it is the same seqname.
-                    int no_features = 0;
-                    HashMap<String,Integer> feature_counts = new HashMap();
+                    int noFeatures = 0;
+                    HashMap<String,Integer> featureCounts = new HashMap();
                     // walk through each line with the same name and add information
-                    for (GffLine gff_line_single_mol : this.raw_lines) {
-                        if (currect_molecule.equals(gff_line_single_mol.getSeqname())) {
+                    for (GffLine gffLineSingleMol : this.rawLines) {
+                        if (currectMolecule.equals(gffLineSingleMol.getSeqname())) {
                             // add to tempinfo
-                            no_features += 1;
-                            if (!feature_counts.containsKey(gff_line_single_mol.getFeature())) {
-                                feature_counts.put(gff_line_single_mol.getFeature(), 1);
+                            noFeatures += 1;
+                            if (!featureCounts.containsKey(gffLineSingleMol.getFeature())) {
+                                featureCounts.put(gffLineSingleMol.getFeature(), 1);
                             }
                             else {
                                 // update hashmap if feature exists within.
-                                feature_counts.put(gff_line_single_mol.getFeature(),
-                                        feature_counts.get(gff_line_single_mol.getFeature())+1);
+                                featureCounts.put(gffLineSingleMol.getFeature(),
+                                        featureCounts.get(gffLineSingleMol.getFeature())+1);
                             }
                         }
                     }
                     // after the for loop, dump all info of the current molecule in the summary string.
-                    this.summary += currect_molecule+"\n";
-                    this.summary += "\tnumber of features\t"+no_features+"\n";
-                    for (String key : feature_counts.keySet()) {
-                        int value = feature_counts.get(key);
+                    this.summary += currectMolecule+"\n";
+                    this.summary += "\tnumber of features\t"+noFeatures+"\n";
+                    for (String key : featureCounts.keySet()) {
+                        int value = featureCounts.get(key);
                         this.summary += "\t\t"+key+"\t\t\t\t"+Integer.toString(value)+"\n";
                     }
                 }
             }
             // after the complete for loop, add up the total number of featues into the summary.
-            this.summary = String.format(this.summary, Integer.toString(total_no_features));
+            this.summary = String.format(this.summary, Integer.toString(totalNoFeatures));
         }
         else {
             // if file is empty, make summary empty too.

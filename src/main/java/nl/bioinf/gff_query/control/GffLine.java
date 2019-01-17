@@ -7,7 +7,7 @@ import java.util.List;
 import static java.lang.Integer.parseInt;
 
 public class GffLine {
-    private String raw_line = "";
+    private String rawLine = "";
     private String seqname = "";
     private String source = "";
     private String feature = "";
@@ -17,92 +17,92 @@ public class GffLine {
     private String score = "";
     private char strand = ' ';
     private char frame  = ' ';
-    private HashMap<String, String> grouping_attr = new HashMap<>();
+    private HashMap<String, String> groupingAttr = new HashMap<>();
 
 
     public GffLine(String line) {
-        this.raw_line = line;
-        String[] split_line = line.split("\t| ");
+        this.rawLine = line;
+        String[] splitLine = line.split("\t| ");
         // filter out empty items
         List<String> list = new ArrayList<>();
-        for(String s : split_line) {
+        for(String s : splitLine) {
             if(s != null && s.length() > 0) {
                 list.add(s);
             }
         }
         // define all separate attributes.
-        split_line = list.toArray(new String[list.size()]);
-        this.seqname = split_line[0];
-        this.source = split_line[1];
-        this.feature = split_line[2];
-        this.start = parseInt(split_line[3]);
-        this.end = parseInt(split_line[4]);
+        splitLine = list.toArray(new String[list.size()]);
+        this.seqname = splitLine[0];
+        this.source = splitLine[1];
+        this.feature = splitLine[2];
+        this.start = parseInt(splitLine[3]);
+        this.end = parseInt(splitLine[4]);
         this.size = this.end-this.start;
-        this.score = split_line[5];
-        this.strand = split_line[6].charAt(0);
-        this.frame = split_line[7].charAt(0);
-        for (String attribute: split_line[8].split(";")) {
+        this.score = splitLine[5];
+        this.strand = splitLine[6].charAt(0);
+        this.frame = splitLine[7].charAt(0);
+        for (String attribute: splitLine[8].split(";")) {
             String[] splitted_attribute = attribute.split("=");
             String my_key = splitted_attribute[0].toUpperCase();
             String my_value = splitted_attribute[1];
-            this.grouping_attr.put(my_key, my_value);
+            this.groupingAttr.put(my_key, my_value);
         }
     }
 
     public String getRaw() {
-        return this.raw_line;
+        return this.rawLine;
     }
 
-    private boolean check_fetch_type(String fetch_type) {
-        return (this.feature.equals(fetch_type) || fetch_type.equals("false"));
+    private boolean checkFetchType(String fetchType) {
+        return (this.feature.equals(fetchType) || fetchType.equals("false"));
     }
 
-    private boolean check_fetch_region(String fetch_region) {
-        if (fetch_region.equals("false")) {
+    private boolean checkFetchRegion(String fetchRegion) {
+        if (fetchRegion.equals("false")) {
             return true;
         }
         // match regex.
-        String[] fetch_region_split = fetch_region.split("\\.\\.");
-        int region_start = parseInt(fetch_region_split[0]);
-        int region_end = parseInt(fetch_region_split[1]);
+        String[] fetchRegionSplit = fetchRegion.split("\\.\\.");
+        int regionStart = parseInt(fetchRegionSplit[0]);
+        int regionEnd = parseInt(fetchRegionSplit[1]);
         // check if region is within scope.
-        return (region_start <= this.start && region_end >= this.end);
+        return (regionStart <= this.start && regionEnd >= this.end);
     }
 
-    private boolean check_filter(String filter) {
+    private boolean checkFilter(String filter) {
         if (filter.equals("false")) {
             return true;
         }
         // The filter should be specified using the format "source|score|orientation|maximum_length|minimum_length",
         // where suppression of an individual filter is indicated using an asterisk (*).
-        String[] filter_split = filter.split("\\|");
-        //System.out.println("filter_split = " + Arrays.toString(filter_split));
-        String filter_source = filter_split[0];
-        String filter_score = filter_split[1];
-        String filter_orientation = filter_split[2];
-        String filter_maximum_length = filter_split[3];
-        String filter_minimum_length = filter_split[4];
+        String[] filterSplit = filter.split("\\|");
+        //System.out.println("filterSplit = " + Arrays.toString(filterSplit));
+        String filterSource = filterSplit[0];
+        String filterScore = filterSplit[1];
+        String filterOrientation = filterSplit[2];
+        String filterMaximumLength = filterSplit[3];
+        String filterMinimumLength = filterSplit[4];
         // check if source matches
-        if (!filter_source.equals(this.source) && !filter_source.equals("*")) {
+        if (!filterSource.equals(this.source) && !filterSource.equals("*")) {
             return false;
         }
         // check if score matches
-        if (!filter_score.equals(this.score) && !filter_score.equals("*")) {
+        if (!filterScore.equals(this.score) && !filterScore.equals("*")) {
             return false;
         }
         // check if the orientation matches
-        if (filter_orientation.charAt(0) != this.strand && !filter_orientation.equals("*")) {
+        if (filterOrientation.charAt(0) != this.strand && !filterOrientation.equals("*")) {
             return false;
         }
         // check if the maxlength is within scope.
-        if (!filter_maximum_length.equals("*")) {
-            if (parseInt(filter_maximum_length) < this.size) {
+        if (!filterMaximumLength.equals("*")) {
+            if (parseInt(filterMaximumLength) < this.size) {
                 return false;
             }
         }
         // check if the minlength is within scope.
-        if (!filter_minimum_length.equals("*")) {
-            if (parseInt(filter_minimum_length) > this.size) {
+        if (!filterMinimumLength.equals("*")) {
+            if (parseInt(filterMinimumLength) > this.size) {
                 return false;
             }
         }
@@ -110,17 +110,17 @@ public class GffLine {
         return true;
     }
 
-    private boolean check_fetch_children(String fetch_children) {
-        if (fetch_children.equals("false")) {
+    private boolean checkFetchChildren(String fetchChildren) {
+        if (fetchChildren.equals("false")) {
             return true;
         }
         // first check if it contains the parent key at all
-        if (!this.grouping_attr.containsKey("PARENT")) {
+        if (!this.groupingAttr.containsKey("PARENT")) {
             return false;
         }
         // if it does, check if it matches.
         else {
-            if (!this.grouping_attr.get("PARENT").equals(fetch_children)) {
+            if (!this.groupingAttr.get("PARENT").equals(fetchChildren)) {
                 return false;
             }
         }
@@ -128,17 +128,17 @@ public class GffLine {
         return true;
     }
 
-    private boolean check_find_wildcard(String find_wildcard) {
-        if (find_wildcard.equals("(.*)false(.*)")) {
+    private boolean checkFindWildcard(String findWildcard) {
+        if (findWildcard.equals("(.*)false(.*)")) {
             return true;
         }
         // first check if it contains the name key at all
-        if (!this.grouping_attr.containsKey("NAME")) {
+        if (!this.groupingAttr.containsKey("NAME")) {
             return false;
         }
         // if it does, check if it matches.
         else{
-            if (!this.grouping_attr.get("NAME").matches(find_wildcard)) {
+            if (!this.groupingAttr.get("NAME").matches(findWildcard)) {
                 return false;
             }
         }
@@ -147,25 +147,25 @@ public class GffLine {
 
     public boolean amICorrect(String[] filters) {
         // defined filters loosely for easier calling later on.
-        String fetch_type = filters[0];
-        String fetch_region = filters[1];
+        String fetchType = filters[0];
+        String fetchRegion = filters[1];
         String filter = filters[2];
-        String fetch_children = filters[3];
-        String find_wildcard = "(.*)"+filters[4]+"(.*)";
+        String fetchChildren = filters[3];
+        String findWildcard = "(.*)"+filters[4]+"(.*)";
 
         // do all checks, return false if the line does not comply. return true otherwise at the end (default)
         // everything that is the string "false" is correct, since this means that the argument was not given.
         boolean correct = true;
         // check fetch type.
-        correct = check_fetch_type(fetch_type);
+        correct = checkFetchType(fetchType);
         // check fetch region
-        if (correct) {correct = check_fetch_region(fetch_region);}
+        if (correct) {correct = checkFetchRegion(fetchRegion);}
         // check filter.
-        if (correct) {correct = check_filter(filter);}
-        // check fetch_children
-        if (correct) {correct = check_fetch_children(fetch_children);}
+        if (correct) {correct = checkFilter(filter);}
+        // check fetchChildren
+        if (correct) {correct = checkFetchChildren(fetchChildren);}
         // check find wildcard
-        if (correct) {correct = check_find_wildcard(find_wildcard);}
+        if (correct) {correct = checkFindWildcard(findWildcard);}
 
         // when passed through all filters, return.
         return correct;
