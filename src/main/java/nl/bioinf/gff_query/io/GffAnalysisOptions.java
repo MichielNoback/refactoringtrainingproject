@@ -1,6 +1,17 @@
 package nl.bioinf.gff_query.io;
 
+import java.io.File;
+
 public class GffAnalysisOptions {
+    public static final String OPTION_HELP = "help";
+    public static final String OPTION_INFILE = "infile";
+    public static final String OPTION_SUMMARY = "summary";
+    public static final String OPTION_FETCH_TYPE = "fetch_type";
+    public static final String OPTION_FETCH_REGION = "fetch_region";
+    public static final String OPTION_FETCH_CHILDREN = "fetch_children";
+    public static final String OPTION_FIND_WILDCARD = "find_wildcard";
+    public static final String OPTION_FILTER = "filter";
+
     private String inFile;
     private boolean summary;
     private String searchType;
@@ -64,4 +75,56 @@ public class GffAnalysisOptions {
     public void setSearchFilter(String searchFilter) {
         this.searchFilter = searchFilter;
     }
+    /**
+     * check correctness of options that were provided
+     * @return
+     */
+    public boolean checkCorrectnessOfInputs() {
+        if (this.inFile != null) {
+            File f = new File(this.inFile);
+            if(!(f.exists() && !f.isDirectory())) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+        if (this.searchFilter != null
+                && ! this.searchFilter.matches("(.+\\|(\\d+|\\*|\\.)\\|(\\.|\\+|\\-|\\*)\\|(\\d+|\\*|\\.)\\|(\\d+|\\*|\\.))")) {
+                //this.commandLine.hasOption(OPTION_FILTER)) {
+            // check if filter has correct formatting. If it does not, return false
+            // <SOURCE, SCORE, ORIENTATION MAXIMUM AND/OR MINIMUM LENGTH>
+//            if (!this.commandLine.getOptionValue("filter").matches(
+//                    )) {
+                return false;
+//            }
+        }
+//        // check fetch region
+//        if (this.commandLine.hasOption(OPTION_FETCH_REGION)) {
+//            // check if fetch region has correct formatting.
+//            if (!this.commandLine.getOptionValue(OPTION_FETCH_REGION).matches("\\d+\\.\\.\\d+")){
+//                return false;
+//            }
+//        }
+//
+//        if (this.commandLine.hasOption(OPTION_FETCH_TYPE)) {
+//            // check if not a bool.
+//            if (this.commandLine.getOptionValue(OPTION_FETCH_TYPE).matches("(true|false)")) {
+//                return false;
+//            }
+//        }
+//        if (this.commandLine.hasOption(OPTION_FETCH_CHILDREN)) {
+//            // check if not a bool.
+//            if (this.commandLine.getOptionValue(OPTION_FETCH_CHILDREN).matches("(true|false)")) {
+//                return false;
+//            }
+//        }
+//        if (this.commandLine.hasOption(OPTION_FIND_WILDCARD)) {
+//            // check if not a bool.
+//            if (this.commandLine.getOptionValue(OPTION_FIND_WILDCARD).matches("(true|false)")) {
+//                return false;
+//            }
+//        }
+        return true;
+    }
+
 }

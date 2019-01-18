@@ -1,12 +1,13 @@
 package nl.bioinf.gff_query;
 
 import nl.bioinf.gff_query.io.FileReader;
+import nl.bioinf.gff_query.io.GffAnalysisOptions;
 import nl.bioinf.gff_query.model.GffFile;
 import nl.bioinf.gff_query.io.CLIParser;
 import org.apache.commons.cli.*;
+
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class GffQuery {
     public static void main(String[] args) throws IOException {
@@ -21,16 +22,18 @@ public class GffQuery {
             cliParser.printHelp();
             return;
         }
+        String[] parsedArguments = cliParser.returnArguments();
+        GffAnalysisOptions analysisOptions = cliParser.getAnalysisOptions();
+        //TODO replace parsedArguments with analysisOptions
 
         // if this worked, go on and grab all the arguments.
         // but first check if the inputs are correct.
-        boolean correctInputs = cliParser.checkInputs();
+        boolean correctInputs = analysisOptions.checkCorrectnessOfInputs();
         if (!correctInputs) {
             System.out.println("Something went wrong when checking inputs, some may be incorrect, please " +
                     "refer to the help page or check if your input file is correct.");
         }
         else {
-            String[] parsedArguments = cliParser.returnArguments();
             // handle stuff based on the case.
             int mycase;
             if (parsedArguments[1].equals("true")) {
@@ -84,9 +87,8 @@ public class GffQuery {
             }
 
         }
-
-
-
     }
+
+
 
 }
