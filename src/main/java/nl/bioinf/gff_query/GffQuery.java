@@ -22,7 +22,7 @@ public class GffQuery {
             cliParser.printHelp();
             return;
         }
-        String[] parsedArguments = cliParser.returnArguments();
+        //String[] parsedArguments = cliParser.returnArguments();
         GffAnalysisOptions analysisOptions = cliParser.getAnalysisOptions();
         //TODO replace parsedArguments with analysisOptions
 
@@ -36,7 +36,8 @@ public class GffQuery {
         else {
             // handle stuff based on the case.
             int mycase;
-            if (parsedArguments[1].equals("true")) {
+            if (analysisOptions.isSummaryRequested()) {
+//            if (parsedArguments[1].equals("true")) {
                 // case 1, print summary.
                 mycase = 1;
             }
@@ -45,7 +46,7 @@ public class GffQuery {
                 mycase = 2;
             }
             // before running the switch, read in file and make a GffFile object
-            String path = parsedArguments[0];
+            String path = analysisOptions.getInFile();//parsedArguments[0];
             FileReader filereader = new FileReader();
             // read in the raw file and catch the resulting ArrayList
             ArrayList fileArrayList = filereader.readFile(path);
@@ -67,11 +68,16 @@ public class GffQuery {
                     // fetch_type, fetch_region, filter, fetch_children, find_wildcard
                     // parsedArguments had this;
                     // infile, summary, fetch_type, fetch_region, fetch_children, find_wildcard, filter
-                    filters[0] = parsedArguments[2];
-                    filters[1] = parsedArguments[3];
-                    filters[2] = parsedArguments[6];
-                    filters[3] = parsedArguments[4];
-                    filters[4] = parsedArguments[5];
+                    filters[0] = analysisOptions.getSearchType();
+                    filters[1] = analysisOptions.getSearchRegion();
+                    filters[2] = analysisOptions.getSearchFilter();
+                    filters[3] = analysisOptions.getSearchChildren();
+                    filters[4] = analysisOptions.getSearchWildcard();
+//                    filters[0] = parsedArguments[2];
+//                    filters[1] = parsedArguments[3];
+//                    filters[2] = parsedArguments[6];
+//                    filters[3] = parsedArguments[4];
+//                    filters[4] = parsedArguments[5];
                     // put in filters and print results
                     myGffFile.applyFilters(filters);
                     if (myGffFile.toString().isEmpty()) {

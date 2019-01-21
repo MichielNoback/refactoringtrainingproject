@@ -3,14 +3,6 @@ package nl.bioinf.gff_query.io;
 import java.io.File;
 
 public class GffAnalysisOptions {
-    public static final String OPTION_HELP = "help";
-    public static final String OPTION_INFILE = "infile";
-    public static final String OPTION_SUMMARY = "summary";
-    public static final String OPTION_FETCH_TYPE = "fetch_type";
-    public static final String OPTION_FETCH_REGION = "fetch_region";
-    public static final String OPTION_FETCH_CHILDREN = "fetch_children";
-    public static final String OPTION_FIND_WILDCARD = "find_wildcard";
-    public static final String OPTION_FILTER = "filter";
 
     private String inFile;
     private boolean summary;
@@ -28,7 +20,7 @@ public class GffAnalysisOptions {
         this.inFile = inFile;
     }
 
-    public boolean isSummary() {
+    public boolean isSummaryRequested() {
         return summary;
     }
 
@@ -72,7 +64,7 @@ public class GffAnalysisOptions {
         return searchFilter;
     }
 
-    public void setSearchFilter(String searchFilter) {
+    public void setSearchFilterAsString(String searchFilter) {
         this.searchFilter = searchFilter;
     }
     /**
