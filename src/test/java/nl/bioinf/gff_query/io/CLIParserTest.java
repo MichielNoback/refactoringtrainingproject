@@ -78,10 +78,10 @@ class CLIParserTest {
         assertTrue(cliParser.commandLine.hasOption(CLIParser.OPTION_INFILE));
     }
 
-    @Test
-    void testReturnArguments() throws ParseException {
-        cliParser.parseCommandLineArguments(CommandLineArgsExamples.ARGS_REQUESTING_SUMMARY_OF_SMALL_FILE);
-        System.out.println("cliParser.returnArguments() = " + Arrays.toString(cliParser.returnArguments()));
-    }
+//    @Test
+//    void testReturnArguments() throws ParseException {
+//        cliParser.parseCommandLineArguments(CommandLineArgsExamples.ARGS_REQUESTING_SUMMARY_OF_SMALL_FILE);
+//        System.out.println("cliParser.returnArguments() = " + Arrays.toString(cliParser.returnArguments()));
+//    }
 
 }
