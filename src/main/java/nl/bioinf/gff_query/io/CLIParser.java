@@ -3,8 +3,9 @@ package nl.bioinf.gff_query.io;
 import org.apache.commons.cli.*;
 
 public class CLIParser {
-    public static final String OPTION_HELP = "help";
-    public static final String OPTION_INFILE = "infile";
+//    these two replaced by enum example
+//    public static final String OPTION_HELP = "help";
+//    public static final String OPTION_INFILE = "infile";
     public static final String OPTION_SUMMARY = "summary";
     public static final String OPTION_FETCH_TYPE = "fetch_type";
     public static final String OPTION_FETCH_REGION = "fetch_region";
@@ -25,19 +26,19 @@ public class CLIParser {
     private void buildOptions() {
         this.options = new Options();
         this.helpOptions = new Options();
-        Option helpOption = Option.builder("h")
-                .longOpt(OPTION_HELP)
+        Option helpOption = Option.builder(CliOption.HELP.shortOpt())
+                .longOpt(CliOption.HELP.longOpt())
                 .required(false)
                 .hasArg(false)
-                .desc("Gives usage instructions")
+                .desc(CliOption.HELP.description())
                 .build();
         options.addOption(helpOption);
         helpOptions.addOption(helpOption);
-        Option infileOption = Option.builder("i")
-                .longOpt(OPTION_INFILE)
+        Option infileOption = Option.builder(CliOption.INFILE.shortOpt())
+                .longOpt(CliOption.INFILE.longOpt())
                 .required(true)
                 .hasArg(true)
-                .desc("The input gff3 file, as absolute or relative path")
+                .desc(CliOption.INFILE.description())
                 .build();
         options.addOption(infileOption);
         Option summaryOption = Option.builder("s")
@@ -97,7 +98,7 @@ public class CLIParser {
     public boolean isHelpRequested(String[] args) {
         try {
             CommandLine commandLine = this.parser.parse(this.options, args);
-            return (commandLine.hasOption(OPTION_HELP));
+            return (commandLine.hasOption(CliOption.HELP.shortOpt()));
         } catch (ParseException e) {
             return true;
         }
@@ -109,8 +110,8 @@ public class CLIParser {
 
     public GffAnalysisOptions getAnalysisOptions() {
         GffAnalysisOptions gffAnalysisOptions = new GffAnalysisOptions();
-        if (this.commandLine.hasOption(OPTION_INFILE)) {
-            gffAnalysisOptions.setInFile(this.commandLine.getOptionValue(OPTION_INFILE));
+        if (this.commandLine.hasOption(CliOption.INFILE.longOpt())) {
+            gffAnalysisOptions.setInFile(this.commandLine.getOptionValue(CliOption.INFILE.longOpt()));
         }
         if (this.commandLine.hasOption(OPTION_SUMMARY)) {
             gffAnalysisOptions.setSummary(true);

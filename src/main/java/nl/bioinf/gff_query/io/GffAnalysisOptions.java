@@ -71,24 +71,19 @@ public class GffAnalysisOptions {
      * check correctness of options that were provided
      * @return
      */
-    public boolean checkCorrectnessOfInputs() {
+    public void checkCorrectnessOfInputs() {
         if (this.inFile != null) {
             File f = new File(this.inFile);
             if(!(f.exists() && !f.isDirectory())) {
-                return false;
+                throw new IllegalArgumentException("File " + inFile
+                        + " does not exist or is a directory");
             }
-        } else {
-            return false;
         }
         if (this.searchFilter != null
                 && ! this.searchFilter.matches("(.+\\|(\\d+|\\*|\\.)\\|(\\.|\\+|\\-|\\*)\\|(\\d+|\\*|\\.)\\|(\\d+|\\*|\\.))")) {
-                //this.commandLine.hasOption(OPTION_FILTER)) {
-            // check if filter has correct formatting. If it does not, return false
             // <SOURCE, SCORE, ORIENTATION MAXIMUM AND/OR MINIMUM LENGTH>
-//            if (!this.commandLine.getOptionValue("filter").matches(
-//                    )) {
-                return false;
-//            }
+            throw new IllegalArgumentException("The search filter is not specified correctly: "
+                    + searchFilter);
         }
 //        // check fetch region
 //        if (this.commandLine.hasOption(OPTION_FETCH_REGION)) {
@@ -116,7 +111,6 @@ public class GffAnalysisOptions {
 //                return false;
 //            }
 //        }
-        return true;
     }
 
 }

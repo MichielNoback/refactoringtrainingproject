@@ -10,30 +10,36 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class GffQuery {
-    public static void main(String[] args) throws IOException {
-        CLIParser cliParser = new CLIParser();
-        if (cliParser.isHelpRequested(args)) {
-            cliParser.printHelp();
-            return;
-        }
-        try {
-            cliParser.parseCommandLineArguments(args);
-        } catch(ParseException ex) {
-            cliParser.printHelp();
-            return;
-        }
-        GffAnalysisOptions analysisOptions = cliParser.getAnalysisOptions();
+    private GffAnalysisOptions analysisOptions;
+    private boolean optionsProcessedIncorrectly = true;
 
-        //TODO it would be really nice to proceed from here with refactoring
+    public static void main(String[] args) throws IOException {
+        //GET OUT OF STATIC!
+        GffQuery gffQuery = new GffQuery();
+        gffQuery.start(args);
+    }
+
+    private void start(String[] args) {
+        processCommandLine(args);
+        if (this.optionsProcessedIncorrectly) {
+            return;
+        }
+
+        try {
+            analysisOptions.checkCorrectnessOfInputs();
+        } catch (IllegalArgumentException ex) {
+            System.err.println("An error occurred. Avalaible info: " + ex.getMessage()
+                    + "\nTry '--help' for instructions");
+        }
 
         // if this worked, go on and grab all the arguments.
         // but first check if the inputs are correct.
-        boolean correctInputs = analysisOptions.checkCorrectnessOfInputs();
-        if (!correctInputs) {
-            System.out.println("Something went wrong when checking inputs, some may be incorrect, please " +
-                    "refer to the help page or check if your input file is correct.");
-        }
-        else {
+//        boolean correctInputs = analysisOptions.checkCorrectnessOfInputs();
+//        if (!correctInputs) {
+//            System.out.println("Something went wrong when checking inputs, some may be incorrect, please " +
+//                    "refer to the help page or check if your input file is correct.");
+//        }
+//        else {
             // handle stuff based on the case.
             int mycase;
             if (analysisOptions.isSummaryRequested()) {
@@ -86,9 +92,23 @@ public class GffQuery {
                     break;
             }
 
-        }
+//        }
     }
 
-
-
+    private void processCommandLine(String[] args) {
+        CLIParser cliParser = new CLIParser();
+        if (cliParser.isHelpRequested(args)) {
+            cliParser.printHelp();
+            this.optionsProcessedIncorrectly = true;
+            return;
+        }
+        try {
+            cliParser.parseCommandLineArguments(args);
+        } catch(ParseException ex) {
+            cliParser.printHelp();
+            this.optionsProcessedIncorrectly = true;
+            return;
+        }
+        this.analysisOptions = cliParser.getAnalysisOptions();
+    }
 }
