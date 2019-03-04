@@ -12,6 +12,8 @@ import java.util.ArrayList;
 public class GffQuery {
     private GffAnalysisOptions analysisOptions;
     private boolean optionsProcessedIncorrectly = true;
+    private ProgramBehaviour programBehaviour;
+    private GffFile myGffFile;
 
     public static void main(String[] args) throws IOException {
         //GET OUT OF STATIC!
@@ -30,6 +32,7 @@ public class GffQuery {
         } catch (IllegalArgumentException ex) {
             System.err.println("An error occurred. Avalaible info: " + ex.getMessage()
                     + "\nTry '--help' for instructions");
+            return;
         }
 
         // if this worked, go on and grab all the arguments.
@@ -41,10 +44,9 @@ public class GffQuery {
 //        }
 //        else {
             // handle stuff based on the case.
-            int mycase;
+            int mycase = 1;
             if (analysisOptions.isSummaryRequested()) {
-                // case 1, print summary.
-                mycase = 1;
+                this.programBehaviour = new SummaryPrinter();
             }
             else {
                 // case 2, actually apply filters and stuff.
@@ -59,7 +61,7 @@ public class GffQuery {
                 mycase = 3;
             }
             // parse it to a GffFile object.
-            GffFile myGffFile = new GffFile(fileArrayList, path);
+            this.myGffFile = new GffFile(fileArrayList, path);
             switch (mycase) {
                 case 1:
                     // do summary, not implemented as of yet.
@@ -111,4 +113,18 @@ public class GffQuery {
         }
         this.analysisOptions = cliParser.getAnalysisOptions();
     }
+
+
+    private interface ProgramBehaviour {
+        void execute();
+    }
+
+    private final class SummaryPrinter implements ProgramBehaviour {
+
+        @Override
+        public void execute() {
+            myGffFile.printSummary();
+        }
+    }
+
 }
