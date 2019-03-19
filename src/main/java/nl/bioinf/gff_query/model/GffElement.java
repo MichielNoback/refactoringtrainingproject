@@ -1,4 +1,4 @@
-package nl.bioinf.gff_query.control;
+package nl.bioinf.gff_query.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,7 +6,7 @@ import java.util.List;
 
 import static java.lang.Integer.parseInt;
 
-public class GffLine {
+public class GffElement {
     private String rawLine = "";
     private String seqname = "";
     private String source = "";
@@ -20,7 +20,7 @@ public class GffLine {
     private HashMap<String, String> groupingAttr = new HashMap<>();
 
 
-    public GffLine(String line) {
+    public GffElement(String line) {
         this.rawLine = line;
         String[] splitLine = line.split("\t| ");
         // filter out empty items

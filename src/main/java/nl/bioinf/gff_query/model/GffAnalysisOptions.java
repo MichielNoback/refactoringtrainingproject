@@ -1,4 +1,4 @@
-package nl.bioinf.gff_query.io;
+package nl.bioinf.gff_query.model;
 
 import java.io.File;
 

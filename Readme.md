@@ -55,9 +55,9 @@ For further explanation, use the help defined below;
  -i,--infile <arg>            input gff3 file, e.g. "gff3_sample.gff3"
  -s,--summary                 makes a summary of the gff3 file.
 
-for path, both windows and linux paths work. When specifying a relative
-path from the currect working directory however, watch out that you DO NOT
-prepend you path with a "/". e.g.: NOT /data/gene_sample.gff3 but
+for gffFilePath, both windows and linux paths work. When specifying a relative
+gffFilePath from the currect working directory however, watch out that you DO NOT
+prepend you gffFilePath with a "/". e.g.: NOT /data/gene_sample.gff3 but
 data/gene_sample.gff3
 
 When specifying the filter argument, it has to in the following format;

@@ -1,5 +1,6 @@
 package nl.bioinf.gff_query.io;
 
+import nl.bioinf.gff_query.model.GffAnalysisOptions;
 import org.apache.commons.cli.*;
 
 public class CLIParser {
